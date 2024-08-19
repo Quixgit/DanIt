@@ -1,4 +1,5 @@
 #!/bin/bash
+#
 
 echo "Введите текст/Enter text:"
 read text
