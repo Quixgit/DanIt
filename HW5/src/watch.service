@@ -1,0 +1,12 @@
+[Unit]
+Description=Watch Directory Service
+After=network.target
+
+[Service]
+ExecStart=/home/ubuntu/Git/DanIt/HW5/src/10.watch.sh
+Restart=always
+User=ubuntu
+#Environment=/username/watch
+
+[Install]
+WantedBy=multi-user.target
