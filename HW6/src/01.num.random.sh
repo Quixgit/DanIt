@@ -5,19 +5,17 @@ MIN_NUM=1
 MAX_NUM=100
 
 
-RANGE=$((RANDOM % 100+1))
+RANGE=$((RANDOM % MAX_NUM+MIN_NUM))
 echo "Напишите число от" $MIN_NUM "до" $MAX_NUM
 
 while [ $ATTEMPT -lt 5 ]; do
     ATTEMPT=$((ATTEMPT + 1))
-    read -p "Попытка наберите $ATTEMPT число: " NUM
+    read -p "Попытка $ATTEMPT укажите число: " NUM
     if [ $NUM -eq $RANGE ]; then
         echo "Вы угадали"
         exit 0
     elif [ $NUM -lt $RANGE ] || [ $NUM -gt $RANGE ]; then
         echo "Вы не угадали ..."
-    else
-        echo "И снова не угадали ..."
     fi
 
 done
