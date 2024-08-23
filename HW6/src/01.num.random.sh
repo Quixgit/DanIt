@@ -12,11 +12,13 @@ while [ $ATTEMPT -lt 5 ]; do
     ATTEMPT=$((ATTEMPT + 1))
     read -p "Попытка $ATTEMPT укажите число: " NUM
     if [ $NUM -eq $RANGE ]; then
-        echo "Вы угадали"
+        echo "Вы молодец, угадали"
         exit 0
-    elif [ $NUM -lt $RANGE ] || [ $NUM -gt $RANGE ]; then
-        echo "Вы не угадали ..."
+    elif [ $NUM -lt $RANGE ]; then
+            echo "Слишком низко. Попробуйте еще раз."
+    else
+            echo "Слишком высоко. Попробуйте еще раз."
     fi
 
 done
-echo "Извините у вас закончились попытки, вы использовали 5 из 5, правильное число" $RANGE.
+echo "Вы использовали 5 из 5 попыток, правильное число" $RANGE.
