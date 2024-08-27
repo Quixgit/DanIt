@@ -1,0 +1,8 @@
+check process nginx with pidfile /run/nginx.pid
+  start program = "/etc/init.d/nginx start"
+  stop program = "/etc/init.d/nginx stop"
+  if failed port 80
+    protocol http
+    with timeout 30 seconds
+    then restart
+  if 7 restarts within 7 cycles then timeout
