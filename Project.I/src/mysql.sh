@@ -16,13 +16,13 @@ sudo sed -i "s/bind-address.*/bind-address = 192.168.56.10/" /etc/mysql/mysql.co
 
 sudo systemctl restart mysql
 
-sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'root';"
+sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'vagrantpass BY 'root';"
 
 # Создаем базу данных, пользователя и предоставляем права
 mysql -uroot -proot <<EOF
 CREATE DATABASE IF NOT EXISTS ${DB_NAME};
-CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASS}';
-GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';
+CREATE USER IF NOT EXISTS '${DB_USER}'@'192.168.56.10' IDENTIFIED BY '${DB_PASS}';
+GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'192.168.56.10';
 FLUSH PRIVILEGES;
 EOF
 
