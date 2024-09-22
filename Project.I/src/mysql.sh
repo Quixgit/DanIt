@@ -21,8 +21,8 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'vagrantpass BY 'ro
 # Создаем базу данных, пользователя и предоставляем права
 mysql -uroot -proot <<EOF
 CREATE DATABASE IF NOT EXISTS ${DB_NAME};
-CREATE USER IF NOT EXISTS '${DB_USER}'@'192.168.56.10' IDENTIFIED BY '${DB_PASS}';
-GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'192.168.56.10';
+CREATE USER IF NOT EXISTS '${DB_USER}'@'192.168.56.11' IDENTIFIED BY '${DB_PASS}';
+GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'192.168.56.11';
 FLUSH PRIVILEGES;
 EOF
 
