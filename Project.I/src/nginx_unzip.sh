@@ -17,7 +17,7 @@ create_app_user() {
     echo "$APP_USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$APP_USER
 }
 
-#ПЕРЕДЕЛАТЬ к чертовой матери
+# ПЕРЕДЕЛАТЬ к чертовой матери
 copy_site_archive() {
     echo "Копирование архива сайта с локального хоста на сервер..."
     vagrant scp $SITE_ARCHIVE nginx:/var/www/html/pets  
@@ -29,12 +29,12 @@ setup_nginx() {
     sudo systemctl enable nginx
     sudo systemctl start nginx
     
-    # Создание директории для сайта и распаковка архива
+    # Директории для сайта и распаковка архива
     echo "Создание директории для сайта и распаковка архива..."
     sudo mkdir -p $PROJECT_DIR
     sudo unzip $SITE_ARCHIVE -d $PROJECT_DIR
     echo "Настройка конфигурации Nginx..."
-    # Настройка конфигурации Nginx для сайта
+    # Конфигурации Nginx для сайта
     sudo bash -c 'cat <<EOT > /etc/nginx/sites-available/pets
         server {
         listen 8080;
