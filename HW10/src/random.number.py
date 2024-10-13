@@ -4,6 +4,7 @@ def guess_number():
     # Генерируем число
     secret_number = random.randint(1, 100)
     attempts = 5
+    
     print("Угадайте число от 1 до 100. Есть 5 попыток")
 
     # Цикл
