@@ -14,7 +14,7 @@ class Alphabet:
 
 ## Наследование от класс Alphabet
 class EngAlphabet(Alphabet):
-    
+      ###Кол-во букв
     _letters_num = 26
     
     ## Вызывает конструктор родительского класса Alphabet
@@ -41,18 +41,18 @@ if __name__ == "__main__":
     
     eng_alphabet = EngAlphabet()
     
-   
+    ###
     print("Alphabet letters:")
     eng_alphabet.print()
-  
+    ###
     print("\nNumber of letters in the alphabet:")
     print(eng_alphabet.letters_num())
-  
+    ###
     print("\nIs 'D' in the English alphabet?")
     print(eng_alphabet.is_en_letter('D'))
-  
+    ###
     print("\nIs 'Б' in the English alphabet?")
     print(eng_alphabet.is_en_letter('Б'))
-  
+    ###
     print("\nExample text in English:")
     print(eng_alphabet.example())
