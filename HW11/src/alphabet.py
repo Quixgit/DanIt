@@ -12,7 +12,7 @@ class Alphabet:
     def letters_num(self):
         return len(self.letters)
 
-## Наследование от класс Alphabet
+## Наследование от класс Alphabet _
 class EngAlphabet(Alphabet):
       ###Кол-во букв
     _letters_num = 26
