@@ -1,39 +1,40 @@
-# Alphabet class
+# Класс конструктор
 class Alphabet:
     def __init__(self, lang, letters):
         self.lang = lang  
         self.letters = list(letters)  
     
     def print(self):
-        """Print all the letters of the alphabet."""
+        ## Выводит на экран все буквы алфавита.
         print(''.join(self.letters))
-    
+        
+    ## Возвращает количество букв в алфавите
     def letters_num(self):
-        """Return the number of letters in the alphabet."""
         return len(self.letters)
 
-
+## Наследование от класс Alphabet
 class EngAlphabet(Alphabet):
     
     _letters_num = 26
     
+    ## Вызывает конструктор родительского класса Alphabet
     def __init__(self):
         
         super().__init__('En', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
     
     @staticmethod
     def is_en_letter(letter):
-        """Check if a letter belongs to the English alphabet."""
+        
         return letter.upper() in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     
+    ## Возвращает количество букв 
     def letters_num(self):
-        """Override the letters_num method to return the number of letters in English alphabet."""
         return EngAlphabet._letters_num
     
+    ## Пример текста на английском
     @staticmethod
     def example():
-        """Return an example text in English."""
-        return "The quick brown fox jumps over the lazy dog."
+        return "Hi, it's the English alphabet."
 
 
 if __name__ == "__main__":
@@ -43,19 +44,15 @@ if __name__ == "__main__":
    
     print("Alphabet letters:")
     eng_alphabet.print()
-    
   
     print("\nNumber of letters in the alphabet:")
     print(eng_alphabet.letters_num())
-    
   
-    print("\nIs 'F' in the English alphabet?")
-    print(eng_alphabet.is_en_letter('F'))
-    
+    print("\nIs 'D' in the English alphabet?")
+    print(eng_alphabet.is_en_letter('D'))
   
-    print("\nIs 'Щ' in the English alphabet?")
-    print(eng_alphabet.is_en_letter('Щ'))
-    
+    print("\nIs 'Б' in the English alphabet?")
+    print(eng_alphabet.is_en_letter('Б'))
   
     print("\nExample text in English:")
     print(eng_alphabet.example())
