@@ -1,0 +1,36 @@
+GET all students - Status: 403
+Response: 
+
+POST create student - Status: 403
+Response: 
+
+POST create student - Status: 403
+Response: 
+
+POST create student - Status: 403
+Response: 
+
+GET all students after creation - Status: 403
+Response: 
+
+PATCH update age of second student - Status: 403
+Response: 
+
+GET second student - Status: 403
+Response: 
+
+PUT update third student - Status: 403
+Response: 
+
+GET third student - Status: 403
+Response: 
+
+GET all students after updates - Status: 403
+Response: 
+
+DELETE first student - Status: 403
+Response: 
+
+GET all students after deletion - Status: 403
+Response: 
+
