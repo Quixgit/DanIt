@@ -51,18 +51,23 @@ updated_student = {
 response = requests.put(f"{BASE_URL}/{third_student_id}", json=updated_student)
 log_result("Оновлення третього студента", response)
 
-# 7. Отримати інформацію про третього студента (GET)
-response = requests.get(f"{BASE_URL}/{third_student_id}")
-log_result("Отримання третього студента", response)
 
-# 8. Отримати всіх існуючих студентів (GET)
+# 7. Отримати всіх існуючих студентів (GET)
 response = requests.get(BASE_URL)
 log_result("Отримання всіх після оновлення", response)
+
+
+# 8. Отримати інформацію про третього студента (GET)
+response = requests.get(f"{BASE_URL}/{third_student_id}")
+log_result("Отримання третього студента", response)
 
 # 9. Видалити першого користувача (DELETE)
 first_student_id = 1 
 response = requests.delete(f"{BASE_URL}/{first_student_id}")
 log_result("Видалення першого студента", response)
+
+
+
 
 # 10. Отримати всіх існуючих студентів (GET)
 response = requests.get(BASE_URL)
