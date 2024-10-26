@@ -46,7 +46,7 @@ updated_student = {
 response = requests.put(f"{BASE_URL}/{third_student_id}", json=updated_student)
 log_result("PUT update third student", response)
 
-# 7. Retrieve information about the third student (GET)
+# 7. Отримати інформацію про третього студента (GET)
 response = requests.get(f"{BASE_URL}/{third_student_id}")
 log_result("GET third student", response)
 
