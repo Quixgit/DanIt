@@ -12,7 +12,7 @@ def log_result(action, response):
 response = requests.get(BASE_URL)
 log_result("Отримання всіх студентів", response)
 
-# 2. Створіть трьох учнів (POST)
+# 2. Створіть 4 учнів (POST)
 students = [
     {"first_name": "Nata", "last_name": "Shc", "age": 60},
     {"first_name": "Oleksii", "last_name": "Shcherbyna", "age": 22},
