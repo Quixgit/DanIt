@@ -1,1 +1,11 @@
-le
+pipeline{
+  agent any
+  stages{
+   stage("work1"){
+    steps{ 
+     echo "Hi, DanIT"
+   }
+}
+   stage("work2"){echo "TEST"}
+  
+ }}   
