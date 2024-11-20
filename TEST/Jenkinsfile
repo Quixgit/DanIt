@@ -6,6 +6,6 @@ pipeline{
      echo "Hi, DanIT"
    }
 }
-   stage("work2"){echo "TEST"}
+   stage("work2") steps{echo "TEST"}
   
  }}   
