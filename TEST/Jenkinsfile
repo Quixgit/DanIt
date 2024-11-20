@@ -4,8 +4,12 @@ pipeline{
    stage("work1"){
     steps{ 
      echo "Hi, DanIT"
-   }
-}
-   stage("work2") steps{echo "TEST"}
+     }
+    }
+   stage("work2") 
+    {
+      steps
+        {echo "TEST"}
+    }
   
  }}   
