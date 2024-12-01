@@ -22,7 +22,7 @@ git push -uf origin main
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.com/KseniiaFS/project-2/-/settings/integrations)
+- [ ] [Set up project integrations](https://gitlab.com/)
 
 ## Collaborate with your team
 
