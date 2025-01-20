@@ -1,0 +1,4 @@
+[ec2]
+16.171.135.68 ansible_user=ubuntu ansible_ssh_private_key_file=my_ssh_key.pem ansible_python_interpreter=/usr/bin/python3
+16.171.137.45 ansible_user=ubuntu ansible_ssh_private_key_file=my_ssh_key.pem ansible_python_interpreter=/usr/bin/python3
+

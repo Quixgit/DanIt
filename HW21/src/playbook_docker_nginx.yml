@@ -1,0 +1,52 @@
+- name: Configure EC2 instances
+  hosts: ec2
+  become: true
+  tasks:
+    - name: Install python3-six library
+      apt:
+        name: python3-six
+        state: present
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Install Docker Compose using curl
+      shell: |
+        curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+      args:
+        creates: /usr/local/bin/docker-compose
+
+    - name: Pull Nginx image
+      docker_image:
+        name: nginx
+        source: pull
+
+    - name: Create Docker Compose file
+      copy:
+        dest: /home/ubuntu/docker-compose.yml
+        content: |
+          version: '3'
+          services:
+            nginx:
+              image: nginx
+              ports:
+                - "80:80"
+                - "443:443"
+
+    - name: Run Nginx with Docker Compose
+      command: docker-compose up -d
+      args:
+        chdir: /home/ubuntu
