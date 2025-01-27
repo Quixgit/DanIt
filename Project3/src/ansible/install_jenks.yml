@@ -1,0 +1,37 @@
+- hosts: jenks_master
+  become: yes
+  tasks:
+    - name: Install java
+      ansible.builtin.apt:
+        name: openjdk-11-jdk
+        state: present
+    - name: Add repository key Jenkins
+      ansible.builtin.apt_key:
+        url: https://pkg.jenkins.io/debian/jenkins.io.key
+        state: present
+    - name: Add repository jenks_master
+      ansible.builtin.apt_repository: 
+        repo: deb http://pkg.jenkins.io/debian-stable binary/
+        state: present
+    - name: Install Jenkins
+      ansible.builtin.apt:
+        name: Jenkins
+        state: present 
+    - name: Start Jenkins
+      ansible.builtin.service:
+        name: Jenkins
+        state: started
+        enabled: yes
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: Nginx
+        state: present 
+    - name: Configure Nginx
+      ansible.builtin.template:
+        src: template/nginx.conf.j2
+        dest: /etc/nginx/sites-available/jenkins
+      notify:
+        - restart Nginx
+    - name: Enable Jenkins       
+      ansible.builtin.command:
+        nginx -s reload
