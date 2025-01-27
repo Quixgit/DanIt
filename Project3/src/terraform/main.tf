@@ -1,6 +1,10 @@
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "quix_bucket_state"
-  acl    = "private"
+  bucket = "quix-s3-bucket"
+}
+
+resource "aws_s3_bucket_acl" "terraform_state_acl" {
+  bucket = aws_s3_bucket.terraform_state.id
+  acl = "private"
 }
 
 resource "aws_vpc" "quix_vpc" {
@@ -22,44 +26,48 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.quix_vpc.id
 }
 
+resource "aws_eip" "net" {
+  domain = "vpc"
+}
+
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.net.id
   subnet_id     = aws_subnet.public.id
 }
 
 resource "aws_security_group" "jenks_sg" {
-  vpc_id = aws_vpc.quix_vpc
+  vpc_id = aws_vpc.quix_vpc.id
   ingress {
-    from_port  = 22
-    to_port    = 22
-    protocol   = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port  = 8080
-    to_port    = 8080
-    protocol   = "tcp"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_instance" "inst_jenks" {
-  ami = ""
-  instance_type = t3.micro
-  subnet_id = aws_subnet.public.id
-  key_name = var.ssh_name
+  ami           = "ami-09a9858973b288bdd"
+  instance_type = "t3.micro"
+  subnet_id     = aws_subnet.public.id
+  key_name      = var.ssh_name
   tags = {
     Name = "Jenks_master"
   }
 }
 
 resource "aws_instance" "inst_worker" {
-  ami = ""
-  instance_type = t3.micro
-  subnet_id = aws_subnet.private.id
-  key_name = var.ssh_name
+  ami           = "ami-09a9858973b288bdd"
+  instance_type = "t3.micro"
+  subnet_id     = aws_subnet.private.id
+  key_name      = var.ssh_name
   tags = {
-    Name = "Jenks_master"
+    Name = "Jenks_woker"
   }
 }
 
