@@ -1,10 +1,14 @@
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "quix-s3-bucket"
+  bucket = "quix-s3-bucket-unique-123456"
 }
 
-resource "aws_s3_bucket_acl" "terraform_state_acl" {
-  bucket = aws_s3_bucket.terraform_state.id
-  acl = "private"
+terraform {
+  backend "s3" {
+    bucket = "quix-s3-bucket-unique-123456"
+    key    = "terraform/state" 
+    region = "eu-north-1" 
+    encrypt = true 
+  }
 }
 
 resource "aws_vpc" "quix_vpc" {
