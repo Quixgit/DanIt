@@ -1,37 +1,82 @@
-- hosts: jenks_master
+- hosts: inst_jenks_master
   become: yes
   tasks:
-    - name: Install java
+    - name: Update apt cache
       ansible.builtin.apt:
-        name: openjdk-11-jdk
+        update_cache: yes
+
+    - name: Install Java
+      ansible.builtin.apt:
+        name: openjdk-21-jdk
         state: present
-    - name: Add repository key Jenkins
-      ansible.builtin.apt_key:
-        url: https://pkg.jenkins.io/debian/jenkins.io.key
-        state: present
-    - name: Add repository jenks_master
-      ansible.builtin.apt_repository: 
-        repo: deb http://pkg.jenkins.io/debian-stable binary/
-        state: present
+
+    - name: Add Jenkins key
+      ansible.builtin.get_url:
+        url: "https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key"
+        dest: "/usr/share/keyrings/jenkins-keyring.asc"
+        mode: '0644'
+
+    - name: Add Jenkins repository
+      ansible.builtin.copy:
+        dest: "/etc/apt/sources.list.d/jenkins.list"
+        content: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        mode: '0644'
+
+    - name: Update apt cache after adding Jenkins repo
+      ansible.builtin.apt:
+        update_cache: yes
+
     - name: Install Jenkins
       ansible.builtin.apt:
-        name: Jenkins
-        state: present 
+        name: jenkins
+        state: present
+
     - name: Start Jenkins
       ansible.builtin.service:
-        name: Jenkins
+        name: jenkins
         state: started
         enabled: yes
+
     - name: Install Nginx
       ansible.builtin.apt:
-        name: Nginx
-        state: present 
-    - name: Configure Nginx
+        name: nginx
+        state: present
+
+    - name: Ensure Nginx directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /etc/nginx/sites-available
+        - /etc/nginx/sites-enabled
+
+    - name: Configure Nginx for Jenkins
       ansible.builtin.template:
         src: template/nginx.conf.j2
         dest: /etc/nginx/sites-available/jenkins
       notify:
         - restart Nginx
-    - name: Enable Jenkins       
+
+    - name: Enable Jenkins site in Nginx
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/jenkins
+        state: link
+        src: /etc/nginx/sites-available/jenkins
+      notify:
+        - restart Nginx
+
+    - name: Test Nginx configuration
       ansible.builtin.command:
-        nginx -s reload
+        cmd: nginx -t
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Reload Nginx configuration
+      ansible.builtin.command:
+        cmd: nginx -s reload
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+  handlers:
+    - name: restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
