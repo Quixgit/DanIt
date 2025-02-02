@@ -1,4 +1,3 @@
-# S3 Bucket для хранения файлов состояния Terraform
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "quix-s3-bucket-12345678"
 }
@@ -17,6 +16,7 @@ resource "aws_s3_bucket_public_access_block" "terraform_state_public_access" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+
 }
 
 resource "aws_s3_bucket" "terraform_state" {
@@ -40,7 +40,7 @@ resource "aws_vpc" "quix_vpc" {
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.quix_vpc.id
   cidr_block              = "10.0.1.0/24"
-  map_public_ip_on_launch = true  # ВАЖНО: автоматически назначать публичный IP
+  map_public_ip_on_launch = true 
 }
 
 resource "aws_subnet" "private" {
@@ -52,7 +52,7 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.quix_vpc.id
 }
 
-# Создание маршрута для публичной подсети
+# Маршрут для публичной подсети
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.quix_vpc.id
 }
@@ -105,12 +105,12 @@ resource "aws_nat_gateway" "nat" {
   subnet_id     = aws_subnet.public.id
 }
 
-
+# Создание маршрутной таблицы для частной подсети
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.quix_vpc.id
 }
 
-# Маршрут для частной сети
+# Маршрут для выхода в интернет для частной подсети через NAT Gateway
 resource "aws_route" "private_nat_route" {
   route_table_id         = aws_route_table.private_route_table.id
   destination_cidr_block = "0.0.0.0/0"
@@ -123,7 +123,7 @@ resource "aws_route_table_association" "private_association" {
   route_table_id = aws_route_table.private_route_table.id
 }
 
-# EC2 паблик
+# EC2 инстанс Jenkins Master в публичной подсети
 resource "aws_instance" "inst_jenks_master" {
   ami                    = "ami-09a9858973b288bdd"
   instance_type          = var.instance_type_master
@@ -134,7 +134,7 @@ resource "aws_instance" "inst_jenks_master" {
 
   user_data = <<-EOF
                 #!/bin/bash
-                echo "Hello 1" > /var/log/user-data.log
+                echo "Hello Quix" > /var/log/user-data.log
                 EOF
 
   tags = {
@@ -142,7 +142,7 @@ resource "aws_instance" "inst_jenks_master" {
   }
 }
 
-#  EC2 приват
+# EC2 приват
 resource "aws_instance" "inst_jenks_worker" {
   ami                    = "ami-09a9858973b288bdd"
   instance_type          = var.instance_type_worker
@@ -160,17 +160,14 @@ resource "aws_instance" "inst_jenks_worker" {
   }
 }
 
-
 resource "template_file" "ansible_inventory" {
   template = <<-EOT
     # inventory.ini
 
     [inst_jenks_master]
     ${aws_instance.inst_jenks_master.public_ip} ansible_ssh_user=ubuntu ansible_ssh_private_key_file=${var.ssh_key_name}
-
   EOT
 }
-
 
 resource "local_file" "ansible_inventory_file" {
   content  = template_file.ansible_inventory.rendered
