@@ -1,4 +1,4 @@
-# 1. Создание S3 Bucket для хранения файлов состояния Terraform
+# S3 Bucket для хранения файлов состояния Terraform
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "quix-s3-bucket-12345678"
 }
@@ -17,17 +17,10 @@ resource "aws_s3_bucket_public_access_block" "terraform_state_public_access" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
-=======
-  bucket = "quix-s3-bucket-unique-123456"
 }
 
-terraform {
-  backend "s3" {
-    bucket = "quix-s3-bucket-unique-123456"
-    key    = "terraform/state" 
-    region = "eu-north-1" 
-    encrypt = true 
-  }
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "quix-s3-bucket-unique-12345678"
 }
 
 terraform {
@@ -39,7 +32,7 @@ terraform {
   }
 }
 
-# 2. Создание VPC и подсетей
+# Создание VPC и подсетей
 resource "aws_vpc" "quix_vpc" {
   cidr_block = "10.0.0.0/16"
 }
@@ -59,7 +52,7 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.quix_vpc.id
 }
 
-# 3. Создание маршрута для публичной подсети
+# Создание маршрута для публичной подсети
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.quix_vpc.id
 }
@@ -75,7 +68,7 @@ resource "aws_route_table_association" "public_association" {
   route_table_id = aws_route_table.public_route_table.id
 }
 
-# 4. Security Group с доступом по SSH
+# Security Group с доступом по SSH
 resource "aws_security_group" "jenks_sg" {
   vpc_id = aws_vpc.quix_vpc.id
 
@@ -83,7 +76,7 @@ resource "aws_security_group" "jenks_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Открыто для всех
+    cidr_blocks = ["0.0.0.0/0"]  
   }
 
   ingress {
@@ -101,47 +94,47 @@ resource "aws_security_group" "jenks_sg" {
   }
 }
 
-# 5. Создание Elastic IP для NAT Gateway
+# Создание Elastic IP для NAT Gateway
 resource "aws_eip" "nat" {
   domain = "vpc"
 }
 
-# 6. Создание NAT Gateway в публичной подсети
+# Создание NAT Gateway в публичной подсети
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public.id
 }
 
-# 7. Создание маршрутной таблицы для частной подсети
+
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.quix_vpc.id
 }
 
-# 8. Маршрут для выхода в интернет для частной подсети через NAT Gateway
+# Маршрут для частной сети
 resource "aws_route" "private_nat_route" {
   route_table_id         = aws_route_table.private_route_table.id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat.id  # Направляем через NAT Gateway
+  nat_gateway_id         = aws_nat_gateway.nat.id  
 }
 
-# 9. Ассоциация маршрутной таблицы с частной подсетью
+# Ассоциация
 resource "aws_route_table_association" "private_association" {
   subnet_id      = aws_subnet.private.id
   route_table_id = aws_route_table.private_route_table.id
 }
 
-# 10. EC2 инстанс Jenkins Master в публичной подсети
+# EC2 паблик
 resource "aws_instance" "inst_jenks_master" {
   ami                    = "ami-09a9858973b288bdd"
   instance_type          = var.instance_type_master
   subnet_id              = aws_subnet.public.id
-  associate_public_ip_address = true  # Гарантированно получает публичный IP
+  associate_public_ip_address = true  
   key_name               = var.ssh_key_name
   vpc_security_group_ids = [aws_security_group.jenks_sg.id]
 
   user_data = <<-EOF
                 #!/bin/bash
-                echo "Hello from Jenkins Master" > /var/log/user-data.log
+                echo "Hello 1" > /var/log/user-data.log
                 EOF
 
   tags = {
@@ -149,7 +142,7 @@ resource "aws_instance" "inst_jenks_master" {
   }
 }
 
-# 11. EC2 инстанс Jenkins Worker в частной подсети
+#  EC2 приват
 resource "aws_instance" "inst_jenks_worker" {
   ami                    = "ami-09a9858973b288bdd"
   instance_type          = var.instance_type_worker
@@ -159,7 +152,7 @@ resource "aws_instance" "inst_jenks_worker" {
 
   user_data = <<-EOF
                 #!/bin/bash
-                echo "Hello from Jenkins Worker" > /var/log/user-data.log
+                echo "Hello 2" > /var/log/user-data.log
                 EOF
 
   tags = {
@@ -167,23 +160,18 @@ resource "aws_instance" "inst_jenks_worker" {
   }
 }
 
-# 12. Генерация inventory для Ansible
+
 resource "template_file" "ansible_inventory" {
   template = <<-EOT
     # inventory.ini
 
-    [jenkins_master]
+    [inst_jenks_master]
     ${aws_instance.inst_jenks_master.public_ip} ansible_ssh_user=ubuntu ansible_ssh_private_key_file=${var.ssh_key_name}
 
-    [jenkins_worker]
-    ${aws_instance.inst_jenks_worker.private_ip} ansible_ssh_user=ubuntu ansible_ssh_private_key_file=${var.ssh_key_name}
-
-    [all:vars]
-    ansible_python_interpreter=/usr/bin/python3
   EOT
 }
 
-# 13. Сохранение инвентори в файл
+
 resource "local_file" "ansible_inventory_file" {
   content  = template_file.ansible_inventory.rendered
   filename = "${path.module}/inventory.ini"
