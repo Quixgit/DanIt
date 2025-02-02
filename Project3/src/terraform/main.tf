@@ -17,6 +17,17 @@ resource "aws_s3_bucket_public_access_block" "terraform_state_public_access" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+=======
+  bucket = "quix-s3-bucket-unique-123456"
+}
+
+terraform {
+  backend "s3" {
+    bucket = "quix-s3-bucket-unique-123456"
+    key    = "terraform/state" 
+    region = "eu-north-1" 
+    encrypt = true 
+  }
 }
 
 terraform {
