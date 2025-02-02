@@ -16,16 +16,11 @@ resource "aws_s3_bucket_public_access_block" "terraform_state_public_access" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
-  bucket = "quix-s3-bucket-unique-123456"
+
 }
 
-terraform {
-  backend "s3" {
-    bucket = "quix-s3-bucket-unique-123456"
-    key    = "terraform/state" 
-    region = "eu-north-1" 
-    encrypt = true 
-  }
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "quix-s3-bucket-unique-12345678"
 }
 
 terraform {
@@ -73,6 +68,7 @@ resource "aws_route_table_association" "public_association" {
   route_table_id = aws_route_table.public_route_table.id
 }
 
+# Security Group с доступом по SSH
 resource "aws_security_group" "jenks_sg" {
   vpc_id = aws_vpc.quix_vpc.id
 
@@ -80,7 +76,7 @@ resource "aws_security_group" "jenks_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Открыто для всех
+    cidr_blocks = ["0.0.0.0/0"]  
   }
 
   ingress {
@@ -118,9 +114,10 @@ resource "aws_route_table" "private_route_table" {
 resource "aws_route" "private_nat_route" {
   route_table_id         = aws_route_table.private_route_table.id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat.id  # Направляем через NAT Gateway
+  nat_gateway_id         = aws_nat_gateway.nat.id  
 }
 
+# Ассоциация
 resource "aws_route_table_association" "private_association" {
   subnet_id      = aws_subnet.private.id
   route_table_id = aws_route_table.private_route_table.id
@@ -131,7 +128,7 @@ resource "aws_instance" "inst_jenks_master" {
   ami                    = "ami-09a9858973b288bdd"
   instance_type          = var.instance_type_master
   subnet_id              = aws_subnet.public.id
-  associate_public_ip_address = true  # Гарантированно получает публичный IP
+  associate_public_ip_address = true  
   key_name               = var.ssh_key_name
   vpc_security_group_ids = [aws_security_group.jenks_sg.id]
 
@@ -145,7 +142,7 @@ resource "aws_instance" "inst_jenks_master" {
   }
 }
 
-# EC2 инстанс Jenkins Worker в частной подсети
+# EC2 приват
 resource "aws_instance" "inst_jenks_worker" {
   ami                    = "ami-09a9858973b288bdd"
   instance_type          = var.instance_type_worker
@@ -155,7 +152,7 @@ resource "aws_instance" "inst_jenks_worker" {
 
   user_data = <<-EOF
                 #!/bin/bash
-                echo "Hello" > /var/log/user-data.log
+                echo "Hello 2" > /var/log/user-data.log
                 EOF
 
   tags = {
@@ -167,11 +164,8 @@ resource "template_file" "ansible_inventory" {
   template = <<-EOT
     # inventory.ini
 
-    [jenkins_master]
+    [inst_jenks_master]
     ${aws_instance.inst_jenks_master.public_ip} ansible_ssh_user=ubuntu ansible_ssh_private_key_file=${var.ssh_key_name}
-
-    [jenkins_worker]
-    ${aws_instance.inst_jenks_worker.private_ip} ansible_ssh_user=ubuntu ansible_ssh_private_key_file=${var.ssh_key_name}
   EOT
 }
 
