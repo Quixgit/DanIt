@@ -13,11 +13,11 @@ spec:
     - containerPort: 80
     resources:
       limits:
-        cpu: "500m"      # Ограничение по CPU (0.5 ядра)
-        memory: "256Mi"  # Ограничение по RAM (256MB)
+        cpu: "500m"      # Ограничение по CPU 
+        memory: "256Mi"  # Ограничение по RA
       requests:
-        cpu: "250m"      # Минимальный CPU (0.25 ядра)
-        memory: "128Mi"  # Минимальный RAM (128MB)
+        cpu: "250m"      # Минимальный CPU
+        memory: "128Mi"  # Минимальный RAM 
     volumeMounts:
     - name: nginx-config
       mountPath: /etc/nginx/conf.d
