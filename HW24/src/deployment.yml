@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-random
+  namespace: default
+  labels:
+    app: app-random
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: app-random
+  template: 
+    metadata:
+      labels:
+        app: app-random
+    spec:
+      containers:
+      - name: app-random
+        image: quixq/app:latest
+        ports:
+        - containerPort: 8082
