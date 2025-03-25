@@ -1,0 +1,26 @@
+groups:
+  - name: alert_rules
+    rules:
+      - alert: LowDiskSpace
+        expr: node_filesystem_free_bytes / node_filesystem_size_bytes * 100 < 15
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: "Free disk space is below 15%."
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode='idle'}[5m])) * 100) > 80
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          description: "CPU usage exceeds 80%."
+
+      - alert: TargetDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          description: "One or more targets are down."
