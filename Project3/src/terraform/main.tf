@@ -32,7 +32,7 @@ terraform {
   }
 }
 
-# Создание VPC и подсетей
+# Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ VPC Ð¸ Ð¿Ð¾Ð´ÑÐµÑÐµÐ¹
 resource "aws_vpc" "quix_vpc" {
   cidr_block = "10.0.0.0/16"
 }
@@ -52,7 +52,7 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.quix_vpc.id
 }
 
-# Маршрут для публичной подсети
+# ÐÐ°ÑÑÑÑÑ Ð´Ð»Ñ Ð¿ÑÐ±Ð»Ð¸ÑÐ½Ð¾Ð¹ Ð¿Ð¾Ð´ÑÐµÑÐ¸
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.quix_vpc.id
 }
@@ -68,7 +68,7 @@ resource "aws_route_table_association" "public_association" {
   route_table_id = aws_route_table.public_route_table.id
 }
 
-# Security Group с доступом по SSH
+# Security Group Ñ Ð´Ð¾ÑÑÑÐ¿Ð¾Ð¼ Ð¿Ð¾ SSH
 resource "aws_security_group" "jenks_sg" {
   vpc_id = aws_vpc.quix_vpc.id
 
@@ -94,36 +94,36 @@ resource "aws_security_group" "jenks_sg" {
   }
 }
 
-# Создание Elastic IP для NAT Gateway
+# Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Elastic IP Ð´Ð»Ñ NAT Gateway
 resource "aws_eip" "nat" {
   domain = "vpc"
 }
 
-# Создание NAT Gateway в публичной подсети
+# Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ NAT Gateway Ð² Ð¿ÑÐ±Ð»Ð¸ÑÐ½Ð¾Ð¹ Ð¿Ð¾Ð´ÑÐµÑÐ¸
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public.id
 }
 
-# Создание маршрутной таблицы для частной подсети
+# Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¼Ð°ÑÑÑÑÑÐ½Ð¾Ð¹ ÑÐ°Ð±Ð»Ð¸ÑÑ Ð´Ð»Ñ ÑÐ°ÑÑÐ½Ð¾Ð¹ Ð¿Ð¾Ð´ÑÐµÑÐ¸
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.quix_vpc.id
 }
 
-# Маршрут для выхода в интернет для частной подсети через NAT Gateway
+# ÐÐ°ÑÑÑÑÑ Ð´Ð»Ñ Ð²ÑÑÐ¾Ð´Ð° Ð² Ð¸Ð½ÑÐµÑÐ½ÐµÑ Ð´Ð»Ñ ÑÐ°ÑÑÐ½Ð¾Ð¹ Ð¿Ð¾Ð´ÑÐµÑÐ¸ ÑÐµÑÐµÐ· NAT Gateway
 resource "aws_route" "private_nat_route" {
   route_table_id         = aws_route_table.private_route_table.id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.nat.id  
 }
 
-# Ассоциация
+# ÐÑÑÐ¾ÑÐ¸Ð°ÑÐ¸Ñ
 resource "aws_route_table_association" "private_association" {
   subnet_id      = aws_subnet.private.id
   route_table_id = aws_route_table.private_route_table.id
 }
 
-# EC2 инстанс Jenkins Master в публичной подсети
+# EC2 Ð¸Ð½ÑÑÐ°Ð½Ñ Jenkins Master Ð² Ð¿ÑÐ±Ð»Ð¸ÑÐ½Ð¾Ð¹ Ð¿Ð¾Ð´ÑÐµÑÐ¸
 resource "aws_instance" "inst_jenks_master" {
   ami                    = "ami-09a9858973b288bdd"
   instance_type          = var.instance_type_master
@@ -142,7 +142,7 @@ resource "aws_instance" "inst_jenks_master" {
   }
 }
 
-# EC2 приват
+# EC2 Ð¿ÑÐ¸Ð²Ð°Ñtest
 resource "aws_instance" "inst_jenks_worker" {
   ami                    = "ami-09a9858973b288bdd"
   instance_type          = var.instance_type_worker
